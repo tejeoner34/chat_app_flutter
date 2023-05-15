@@ -1,12 +1,16 @@
+import 'package:chat_app_flutter/presentations/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 
 class MessageFieldBox extends StatelessWidget {
-  const MessageFieldBox({super.key});
+  final ValueChanged<String> onSubmit;
+  final ChatProvider chatProviderInstance;
+
+  const MessageFieldBox(
+      {super.key, required this.onSubmit, required this.chatProviderInstance});
 
   @override
   Widget build(BuildContext context) {
     final textController = TextEditingController();
-    final focusNode = FocusNode();
 
     final outlineInputBorder = UnderlineInputBorder(
         borderSide: const BorderSide(color: Colors.transparent),
@@ -20,6 +24,7 @@ class MessageFieldBox extends StatelessWidget {
         suffixIcon: IconButton(
           icon: const Icon(Icons.send_outlined),
           onPressed: () {
+            onSubmit(textController.value.text);
             textController.clear();
           },
         ));
@@ -27,13 +32,14 @@ class MessageFieldBox extends StatelessWidget {
     return TextFormField(
       controller: textController,
       decoration: inputDecoration,
-      focusNode: focusNode,
+      focusNode: chatProviderInstance.testFocus,
       onFieldSubmitted: (value) {
+        onSubmit(value);
         textController.clear();
-        focusNode.requestFocus();
+        chatProviderInstance.testFocus.requestFocus();
       },
       onTapOutside: (event) {
-        focusNode.unfocus();
+        chatProviderInstance.testFocus.unfocus();
       },
     );
   }
