@@ -1,7 +1,9 @@
+import 'package:chat_app_flutter/domain/entities/message.dart';
 import 'package:flutter/material.dart';
 
 class PartnerBubble extends StatelessWidget {
-  const PartnerBubble({super.key});
+  final Message message;
+  const PartnerBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -13,24 +15,30 @@ class PartnerBubble extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
               color: colors.secondary, borderRadius: BorderRadius.circular(25)),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
             child: Text(
-              'Partner message',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              message.text,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
         ),
         const SizedBox(
           height: 10,
         ),
-        _ImageBubble()
+        _ImageBubble(
+          url: message.imageUrl!,
+        )
       ],
     );
   }
 }
 
 class _ImageBubble extends StatelessWidget {
+  final String url;
+
+  const _ImageBubble({required this.url});
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -38,12 +46,12 @@ class _ImageBubble extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Image.network(
-        'https://yesno.wtf/assets/yes/9-6403270cf95723ae4664274db51f1fd4.gif',
+        url,
         width: size.width * .7,
         height: 150,
         fit: BoxFit.cover,
         loadingBuilder: (context, child, loadingProgress) {
-          if(loadingProgress == null) return child;
+          if (loadingProgress == null) return child;
           return Container(
             height: 150,
             width: size.width * .7,

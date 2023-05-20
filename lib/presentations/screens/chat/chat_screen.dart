@@ -43,7 +43,7 @@ class _ChatContainer extends StatelessWidget {
               itemBuilder: (context, index) {
                 final message = chatProvider.messageList[index];
                 return (message.fromWho == FromWho.partner)
-                    ? const PartnerBubble()
+                    ? PartnerBubble(message: message,)
                     : MessageBubble(message: message);
               },
             )),

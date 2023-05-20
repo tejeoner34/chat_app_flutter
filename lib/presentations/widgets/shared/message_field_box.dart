@@ -1,7 +1,7 @@
 import 'package:chat_app_flutter/presentations/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 
-class MessageFieldBox extends StatelessWidget {
+class MessageFieldBox extends StatefulWidget {
   final ValueChanged<String> onSubmit;
   final ChatProvider chatProviderInstance;
 
@@ -9,8 +9,35 @@ class MessageFieldBox extends StatelessWidget {
       {super.key, required this.onSubmit, required this.chatProviderInstance});
 
   @override
+  State<MessageFieldBox> createState() => _MessageFieldBoxState();
+}
+
+class _MessageFieldBoxState extends State<MessageFieldBox> {
+  late TextEditingController textController;
+  bool _isFieldEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+    textController = TextEditingController();
+    textController.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      _isFieldEmpty = textController.text.isEmpty;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final textController = TextEditingController();
+    final colors = Theme.of(context).colorScheme;
 
     final outlineInputBorder = UnderlineInputBorder(
         borderSide: const BorderSide(color: Colors.transparent),
@@ -24,22 +51,25 @@ class MessageFieldBox extends StatelessWidget {
         suffixIcon: IconButton(
           icon: const Icon(Icons.send_outlined),
           onPressed: () {
-            onSubmit(textController.value.text);
+            widget.onSubmit(textController.value.text);
             textController.clear();
           },
+          color: _isFieldEmpty
+              ? null
+              : colors.primary,
         ));
 
     return TextFormField(
       controller: textController,
       decoration: inputDecoration,
-      focusNode: chatProviderInstance.testFocus,
+      focusNode: widget.chatProviderInstance.testFocus,
       onFieldSubmitted: (value) {
-        onSubmit(value);
+        widget.onSubmit(value);
         textController.clear();
-        chatProviderInstance.testFocus.requestFocus();
+        widget.chatProviderInstance.testFocus.requestFocus();
       },
       onTapOutside: (event) {
-        chatProviderInstance.testFocus.unfocus();
+        widget.chatProviderInstance.testFocus.unfocus();
       },
     );
   }
